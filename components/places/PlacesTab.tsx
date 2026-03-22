@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useJsApiLoader } from '@react-google-maps/api'
 import { Place, PlaceTag } from '@/types'
 import PlaceSearch from './PlaceSearch'
 import PlacesMap from './PlacesMap'
@@ -12,8 +13,13 @@ interface Props {
 }
 
 const TAGS: PlaceTag[] = ['관광지', '맛집', '카페', '쇼핑']
+const LIBRARIES: ('places')[] = ['places']
 
 export default function PlacesTab({ tripId, canEdit }: Props) {
+  const { isLoaded } = useJsApiLoader({
+    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ?? '',
+    libraries: LIBRARIES,
+  })
   const [places, setPlaces] = useState<Place[]>([])
   const [activeTag, setActiveTag] = useState<PlaceTag | 'all'>('all')
   const [pendingPlace, setPendingPlace] = useState<Partial<Place> | null>(null)
@@ -45,6 +51,7 @@ export default function PlacesTab({ tripId, canEdit }: Props) {
       {canEdit && (
         <div className="space-y-3">
           <PlaceSearch
+            isLoaded={isLoaded}
             onPlaceSelect={p => setPendingPlace(p)}
           />
           {pendingPlace && (
@@ -71,7 +78,7 @@ export default function PlacesTab({ tripId, canEdit }: Props) {
         </div>
       )}
 
-      <PlacesMap places={places} />
+      <PlacesMap isLoaded={isLoaded} places={places} />
 
       {/* 태그 필터 */}
       <div className="flex gap-2 overflow-x-auto pb-1">

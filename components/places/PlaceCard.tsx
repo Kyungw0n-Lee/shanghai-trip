@@ -32,6 +32,7 @@ export default function PlaceCard({ place, canEdit, onDelete }: Props) {
     fetch(`/api/naver-search?q=${encodeURIComponent(place.name)}`)
       .then(r => r.ok ? r.json() : { items: [] })
       .then(d => setNaverItems(d.items ?? []))
+      .catch(() => {})
   }, [expanded, place.name])
 
   async function handleDelete() {
@@ -70,8 +71,9 @@ export default function PlaceCard({ place, canEdit, onDelete }: Props) {
           {naverItems.map((item, i) => (
             <a key={i} href={item.link} target="_blank" rel="noopener noreferrer"
               className="block text-xs text-blue-500 hover:underline truncate"
-              dangerouslySetInnerHTML={{ __html: item.title }}
-            />
+            >
+              {item.title.replace(/<[^>]*>/g, '')}
+            </a>
           ))}
         </div>
       )}

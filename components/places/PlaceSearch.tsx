@@ -1,9 +1,10 @@
 'use client'
 
 import { useRef } from 'react'
-import { useJsApiLoader, StandaloneSearchBox } from '@react-google-maps/api'
+import { StandaloneSearchBox } from '@react-google-maps/api'
 
 interface Props {
+  isLoaded: boolean
   onPlaceSelect: (place: {
     name: string
     address: string
@@ -13,14 +14,7 @@ interface Props {
   }) => void
 }
 
-const LIBRARIES: ('places')[] = ['places']
-
-export default function PlaceSearch({ onPlaceSelect }: Props) {
-  const { isLoaded } = useJsApiLoader({
-    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ?? '',
-    libraries: LIBRARIES,
-  })
-
+export default function PlaceSearch({ isLoaded, onPlaceSelect }: Props) {
   const searchBoxRef = useRef<google.maps.places.SearchBox | null>(null)
 
   function handlePlacesChanged() {
@@ -28,7 +22,6 @@ export default function PlaceSearch({ onPlaceSelect }: Props) {
     if (!places || places.length === 0) return
     const place = places[0]
     if (!place.geometry?.location) return
-
     onPlaceSelect({
       name: place.name ?? '',
       address: place.formatted_address ?? '',

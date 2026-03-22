@@ -46,7 +46,7 @@ export interface Place {
   address: string | null
   lat: number | null
   lng: number | null
-  tag: string
+  tag: PlaceTag
   memo: string | null
   google_place_id: string | null
 }

@@ -6,9 +6,11 @@ interface Props {
   tripId: string
   onSuccess: () => void
   onClose: () => void
+  title?: string
+  description?: string
 }
 
-export default function PasswordModal({ tripId, onSuccess, onClose }: Props) {
+export default function PasswordModal({ tripId, onSuccess, onClose, title, description }: Props) {
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
@@ -36,8 +38,8 @@ export default function PasswordModal({ tripId, onSuccess, onClose }: Props) {
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl">
-        <h2 className="text-lg font-bold mb-1">편집 모드 잠금 해제</h2>
-        <p className="text-sm text-gray-500 mb-4">편집 비밀번호를 입력하세요</p>
+        <h2 className="text-lg font-bold mb-1">{title ?? '편집 모드 잠금 해제'}</h2>
+        <p className="text-sm text-gray-500 mb-4">{description ?? '편집 비밀번호를 입력하세요'}</p>
         <form onSubmit={handleSubmit} className="space-y-3">
           <input
             type="password"

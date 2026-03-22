@@ -7,6 +7,7 @@ import TripTabs from '@/components/tabs/TripTabs'
 import ShareButton from '@/components/ui/ShareButton'
 import PasswordModal from '@/components/ui/PasswordModal'
 import { useEditMode } from '@/hooks/useEditMode'
+import { useRecentTrips } from '@/hooks/useRecentTrips'
 import ScheduleTab from '@/components/schedule/ScheduleTab'
 import ChecklistTab from '@/components/checklist/ChecklistTab'
 import BudgetTab from '@/components/budget/BudgetTab'
@@ -17,11 +18,17 @@ export default function TripPage() {
   const [trip, setTrip] = useState<Trip | null>(null)
   const [activeTab, setActiveTab] = useState('schedule')
   const { canEdit, showModal, setShowModal, requestEdit, grantEdit } = useEditMode(id)
+  const { addRecentTrip } = useRecentTrips()
 
   useEffect(() => {
     fetch(`/api/trips/${id}`)
       .then(r => r.ok ? r.json() : null)
-      .then(data => { if (data) setTrip(data) })
+      .then(data => {
+        if (data) {
+          setTrip(data)
+          addRecentTrip({ id: data.id, title: data.title, start_date: data.start_date, end_date: data.end_date })
+        }
+      })
   }, [id])
 
   if (!trip) return <div className="flex items-center justify-center min-h-screen">불러오는 중...</div>

@@ -29,6 +29,18 @@ export default function BudgetTab({ tripId, initialBudget, canEdit }: Props) {
       .then(d => setRate(d.rate))
   }, [tripId])
 
+  async function handleSaveBudget() {
+    const newBudget = Number(budgetInput)
+    const res = await fetch(`/api/trips/${tripId}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ budget_cny: newBudget }),
+    })
+    if (!res.ok) return
+    setBudget(newBudget)
+    setEditingBudget(false)
+  }
+
   return (
     <div className="p-4 space-y-4">
       {canEdit && (
@@ -43,17 +55,7 @@ export default function BudgetTab({ tripId, initialBudget, canEdit }: Props) {
                 className="flex-1 border rounded-lg px-3 py-1.5 text-sm"
               />
               <button
-                onClick={async () => {
-                  const newBudget = Number(budgetInput)
-                  const res = await fetch(`/api/trips/${tripId}`, {
-                    method: 'PATCH',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ budget_cny: newBudget }),
-                  })
-                  if (!res.ok) return
-                  setBudget(newBudget)
-                  setEditingBudget(false)
-                }}
+                onClick={handleSaveBudget}
                 className="bg-blue-500 text-white px-3 py-1.5 rounded-lg text-sm"
               >저장</button>
             </div>

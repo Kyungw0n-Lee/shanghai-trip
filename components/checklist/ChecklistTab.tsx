@@ -12,6 +12,7 @@ interface Props {
 export default function ChecklistTab({ tripId, canEdit }: Props) {
   const [items, setItems] = useState<ChecklistItem[]>([])
   const [newCategory, setNewCategory] = useState('')
+  const [newFirstItem, setNewFirstItem] = useState('')
   const [addingCategory, setAddingCategory] = useState(false)
 
   useEffect(() => {
@@ -36,14 +37,14 @@ export default function ChecklistTab({ tripId, canEdit }: Props) {
   }
 
   async function handleAddCategory() {
-    if (!newCategory.trim()) return
+    if (!newCategory.trim() || !newFirstItem.trim()) return
     const res = await fetch('/api/checklist-items', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         trip_id: tripId,
         category: newCategory.trim(),
-        content: '새 항목',
+        content: newFirstItem.trim(),
         is_checked: false,
         is_template: false,
         sort_order: 0,
@@ -53,6 +54,7 @@ export default function ChecklistTab({ tripId, canEdit }: Props) {
     const item = await res.json()
     setItems(prev => [...prev, item])
     setNewCategory('')
+    setNewFirstItem('')
     setAddingCategory(false)
   }
 
@@ -84,17 +86,26 @@ export default function ChecklistTab({ tripId, canEdit }: Props) {
         ))}
         {canEdit && (
           addingCategory ? (
-            <div className="flex gap-2">
+            <div className="space-y-2">
               <input
                 type="text"
                 value={newCategory}
                 onChange={e => setNewCategory(e.target.value)}
                 placeholder="카테고리 이름"
-                className="flex-1 border rounded-lg px-3 py-2 text-sm"
+                className="w-full border rounded-lg px-3 py-2 text-sm"
                 autoFocus
               />
-              <button onClick={handleAddCategory} className="bg-blue-500 text-white rounded-lg px-4 py-2 text-sm">추가</button>
-              <button onClick={() => setAddingCategory(false)} className="text-gray-400 text-sm">취소</button>
+              <input
+                type="text"
+                value={newFirstItem}
+                onChange={e => setNewFirstItem(e.target.value)}
+                placeholder="첫 번째 항목"
+                className="w-full border rounded-lg px-3 py-2 text-sm"
+              />
+              <div className="flex gap-2">
+                <button onClick={handleAddCategory} className="flex-1 bg-blue-500 text-white rounded-lg px-4 py-2 text-sm">추가</button>
+                <button onClick={() => { setAddingCategory(false); setNewCategory(''); setNewFirstItem('') }} className="text-gray-400 text-sm px-3 py-2">취소</button>
+              </div>
             </div>
           ) : (
             <button

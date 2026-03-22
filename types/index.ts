@@ -34,7 +34,7 @@ export interface Expense {
   id: string
   trip_id: string
   date: string
-  category: string
+  category: ExpenseCategory
   amount_cny: number
   memo: string | null
 }

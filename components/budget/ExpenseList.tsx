@@ -2,19 +2,12 @@
 
 import { Expense } from '@/types'
 import { formatCny } from '@/lib/exchange-rate'
+import { CATEGORY_COLORS } from './budget-constants'
 
 interface Props {
   expenses: Expense[]
   canEdit: boolean
   onDelete: (id: string) => void
-}
-
-const CATEGORY_COLORS: Record<string, string> = {
-  '식비': 'bg-orange-100 text-orange-700',
-  '교통': 'bg-blue-100 text-blue-700',
-  '숙박': 'bg-purple-100 text-purple-700',
-  '쇼핑': 'bg-pink-100 text-pink-700',
-  '기타': 'bg-gray-100 text-gray-700',
 }
 
 export default function ExpenseList({ expenses, canEdit, onDelete }: Props) {

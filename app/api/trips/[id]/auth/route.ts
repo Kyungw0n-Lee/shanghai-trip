@@ -4,15 +4,16 @@ import { verifyPassword } from '@/lib/auth'
 
 export async function POST(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await context.params
   const { password } = await req.json()
   const supabase = createServerClient()
 
   const { data, error } = await supabase
     .from('trips')
     .select('password')
-    .eq('id', params.id)
+    .eq('id', id)
     .single()
 
   if (error || !data) {

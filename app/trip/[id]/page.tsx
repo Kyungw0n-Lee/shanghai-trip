@@ -10,11 +10,7 @@ import { useEditMode } from '@/hooks/useEditMode'
 import ScheduleTab from '@/components/schedule/ScheduleTab'
 import ChecklistTab from '@/components/checklist/ChecklistTab'
 import BudgetTab from '@/components/budget/BudgetTab'
-
-// 탭 컴포넌트는 이후 Task에서 구현 (임시 placeholder)
-function PlaceholderTab({ name }: { name: string }) {
-  return <div className="p-6 text-gray-400 text-center">{name} 탭 준비 중...</div>
-}
+import PlacesTab from '@/components/places/PlacesTab'
 
 export default function TripPage() {
   const { id } = useParams<{ id: string }>()
@@ -75,7 +71,7 @@ export default function TripPage() {
         {activeTab === 'budget' && trip && (
           <BudgetTab tripId={id} initialBudget={trip.budget_cny} canEdit={canEdit} />
         )}
-        {activeTab === 'places' && <PlaceholderTab name="장소" />}
+        {activeTab === 'places' && <PlacesTab tripId={id} canEdit={canEdit} />}
       </div>
 
       {/* 비밀번호 모달 */}

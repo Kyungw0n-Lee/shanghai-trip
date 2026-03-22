@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { Place, PlaceTag } from '@/types'
+import PhotoUpload from '@/components/ui/PhotoUpload'
 
 interface NaverItem {
   title: string
@@ -77,6 +78,15 @@ export default function PlaceCard({ place, canEdit, onDelete }: Props) {
       {expanded && naverItems.length === 0 && (
         <p className="mt-2 text-xs text-gray-400">검색 결과 없음 (API 키 필요)</p>
       )}
+
+      <div className="mt-3">
+        <PhotoUpload
+          tripId={place.trip_id}
+          refType="place"
+          refId={place.id}
+          canEdit={canEdit}
+        />
+      </div>
     </div>
   )
 }

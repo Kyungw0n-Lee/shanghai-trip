@@ -91,8 +91,10 @@ export default function BudgetTab({ tripId, initialBudget, canEdit }: Props) {
 
       <ExpenseList
         expenses={expenses}
+        tripId={tripId}
         canEdit={canEdit}
         onDelete={id => setExpenses(prev => prev.filter(e => e.id !== id))}
+        onUpdate={updated => setExpenses(prev => prev.map(e => e.id === updated.id ? updated : e))}
       />
     </div>
   )

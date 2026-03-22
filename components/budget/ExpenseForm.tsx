@@ -9,27 +9,51 @@ interface Props {
   tripId: string
   onAdd: (expense: Expense) => void
   onCancel: () => void
+  initial?: Partial<Expense>
+  editId?: string
 }
 
-export default function ExpenseForm({ tripId, onAdd, onCancel }: Props) {
-  const today = new Date().toISOString().split('T')[0]
+export default function ExpenseForm({ tripId, onAdd, onCancel, initial, editId }: Props) {
+  const now = new Date()
+  const today = now.toISOString().split('T')[0]
+  const currentTime = now.toTimeString().slice(0, 5)
+
   const [form, setForm] = useState({
-    date: today,
-    category: '식비' as ExpenseCategory,
-    amount_cny: '',
-    memo: '',
+    date: initial?.date ?? today,
+    time: initial?.time ?? currentTime,
+    category: (initial?.category ?? '식비') as ExpenseCategory,
+    amount_cny: initial?.amount_cny != null ? String(initial.amount_cny) : '',
+    memo: initial?.memo ?? '',
   })
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    const res = await fetch('/api/expenses', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ ...form, trip_id: tripId, amount_cny: Number(form.amount_cny) }),
-    })
-    if (!res.ok) return
-    const expense = await res.json()
-    onAdd(expense)
+    const payload = {
+      ...form,
+      trip_id: tripId,
+      amount_cny: Number(form.amount_cny),
+      time: form.time || null,
+    }
+
+    if (editId) {
+      const res = await fetch(`/api/expenses/${editId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      })
+      if (!res.ok) return
+      const expense = await res.json()
+      onAdd(expense)
+    } else {
+      const res = await fetch('/api/expenses', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      })
+      if (!res.ok) return
+      const expense = await res.json()
+      onAdd(expense)
+    }
   }
 
   return (
@@ -42,13 +66,19 @@ export default function ExpenseForm({ tripId, onAdd, onCancel }: Props) {
             className="w-full border rounded-lg px-3 py-2 text-sm" required />
         </div>
         <div>
-          <label className="text-xs text-gray-500 mb-1 block">카테고리</label>
-          <select value={form.category}
-            onChange={e => setForm(f => ({ ...f, category: e.target.value as ExpenseCategory }))}
-            className="w-full border rounded-lg px-3 py-2 text-sm">
-            {CATEGORIES.map(c => <option key={c}>{c}</option>)}
-          </select>
+          <label className="text-xs text-gray-500 mb-1 block">시간</label>
+          <input type="time" value={form.time}
+            onChange={e => setForm(f => ({ ...f, time: e.target.value }))}
+            className="w-full border rounded-lg px-3 py-2 text-sm" />
         </div>
+      </div>
+      <div>
+        <label className="text-xs text-gray-500 mb-1 block">카테고리</label>
+        <select value={form.category}
+          onChange={e => setForm(f => ({ ...f, category: e.target.value as ExpenseCategory }))}
+          className="w-full border rounded-lg px-3 py-2 text-sm">
+          {CATEGORIES.map(c => <option key={c}>{c}</option>)}
+        </select>
       </div>
       <div>
         <label className="text-xs text-gray-500 mb-1 block">금액 (CNY ¥)</label>
@@ -63,7 +93,9 @@ export default function ExpenseForm({ tripId, onAdd, onCancel }: Props) {
         className="w-full border rounded-lg px-3 py-2 text-sm" />
       <div className="flex gap-2">
         <button type="button" onClick={onCancel} className="flex-1 border rounded-lg py-2 text-sm">취소</button>
-        <button type="submit" className="flex-1 bg-blue-500 text-white rounded-lg py-2 text-sm">추가</button>
+        <button type="submit" className="flex-1 bg-blue-500 text-white rounded-lg py-2 text-sm">
+          {editId ? '수정 완료' : '추가'}
+        </button>
       </div>
     </form>
   )

@@ -43,6 +43,17 @@ export default function HomePage() {
     router.push(`/trip/${trip.id}`)
   }
 
+  async function handleTripOpen(trip: RecentTrip) {
+    // 서버에 여행이 존재하는지 확인 후 비밀번호 모달 표시
+    const res = await fetch(`/api/trips/${trip.id}`)
+    if (!res.ok) {
+      removeRecentTrip(trip.id)
+      alert('이 여행은 삭제되었습니다. 목록에서 제거합니다.')
+      return
+    }
+    setPending({ trip, action: 'open' })
+  }
+
   function handlePasswordSuccess() {
     if (!pending) return
     if (pending.action === 'open') {
@@ -128,7 +139,7 @@ export default function HomePage() {
                 >
                   <button
                     className="flex-1 text-left"
-                    onClick={() => setPending({ trip, action: 'open' })}
+                    onClick={() => handleTripOpen(trip)}
                   >
                     <p className="font-medium text-sm">{trip.title}</p>
                     <p className="text-xs text-gray-400">{trip.start_date} ~ {trip.end_date}</p>

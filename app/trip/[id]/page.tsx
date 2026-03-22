@@ -7,6 +7,7 @@ import TripTabs from '@/components/tabs/TripTabs'
 import ShareButton from '@/components/ui/ShareButton'
 import PasswordModal from '@/components/ui/PasswordModal'
 import { useEditMode } from '@/hooks/useEditMode'
+import ScheduleTab from '@/components/schedule/ScheduleTab'
 
 // 탭 컴포넌트는 이후 Task에서 구현 (임시 placeholder)
 function PlaceholderTab({ name }: { name: string }) {
@@ -58,7 +59,14 @@ export default function TripPage() {
 
       {/* 탭 콘텐츠 */}
       <div>
-        {activeTab === 'schedule' && <PlaceholderTab name="일정" />}
+        {activeTab === 'schedule' && trip && (
+          <ScheduleTab
+            tripId={id}
+            startDate={trip.start_date}
+            endDate={trip.end_date}
+            canEdit={canEdit}
+          />
+        )}
         {activeTab === 'checklist' && <PlaceholderTab name="체크리스트" />}
         {activeTab === 'budget' && <PlaceholderTab name="지출" />}
         {activeTab === 'places' && <PlaceholderTab name="장소" />}

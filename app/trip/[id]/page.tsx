@@ -22,8 +22,8 @@ export default function TripPage() {
 
   useEffect(() => {
     fetch(`/api/trips/${id}`)
-      .then(r => r.json())
-      .then(setTrip)
+      .then(r => r.ok ? r.json() : null)
+      .then(data => { if (data) setTrip(data) })
   }, [id])
 
   if (!trip) return <div className="flex items-center justify-center min-h-screen">불러오는 중...</div>

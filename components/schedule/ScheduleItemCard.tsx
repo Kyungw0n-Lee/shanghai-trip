@@ -16,7 +16,8 @@ export default function ScheduleItemCard({ item, canEdit, onUpdate, onDelete }: 
 
   async function handleDelete() {
     if (!confirm('삭제하시겠습니까?')) return
-    await fetch(`/api/schedule-items/${item.id}`, { method: 'DELETE' })
+    const res = await fetch(`/api/schedule-items/${item.id}`, { method: 'DELETE' })
+    if (!res.ok) return
     onDelete(item.id)
   }
 

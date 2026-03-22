@@ -28,7 +28,7 @@ export default function ScheduleTab({ tripId, startDate, endDate, canEdit }: Pro
 
   useEffect(() => {
     fetch(`/api/schedule-items?trip_id=${tripId}`)
-      .then(r => r.json())
+      .then(r => r.ok ? r.json() : [])
       .then(setItems)
   }, [tripId])
 

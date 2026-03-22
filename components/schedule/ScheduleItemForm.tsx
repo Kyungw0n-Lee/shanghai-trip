@@ -31,6 +31,7 @@ export default function ScheduleItemForm({ tripId, dayIndex, onSave, onCancel, i
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body),
     })
+    if (!res.ok) return
     const data = await res.json()
     onSave(data)
   }

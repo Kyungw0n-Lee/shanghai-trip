@@ -43,15 +43,26 @@ export default function HomePage() {
     router.push(`/trip/${trip.id}`)
   }
 
-  async function handleTripOpen(trip: RecentTrip) {
-    // 서버에 여행이 존재하는지 확인 후 비밀번호 모달 표시
+  async function checkTripExists(trip: RecentTrip): Promise<boolean> {
     const res = await fetch(`/api/trips/${trip.id}`)
     if (!res.ok) {
       removeRecentTrip(trip.id)
       alert('이 여행은 삭제되었습니다. 목록에서 제거합니다.')
-      return
+      return false
     }
-    setPending({ trip, action: 'open' })
+    return true
+  }
+
+  async function handleTripOpen(trip: RecentTrip) {
+    if (await checkTripExists(trip)) {
+      setPending({ trip, action: 'open' })
+    }
+  }
+
+  async function handleTripDelete(trip: RecentTrip) {
+    if (await checkTripExists(trip)) {
+      setPending({ trip, action: 'delete' })
+    }
   }
 
   function handlePasswordSuccess() {
@@ -145,7 +156,7 @@ export default function HomePage() {
                     <p className="text-xs text-gray-400">{trip.start_date} ~ {trip.end_date}</p>
                   </button>
                   <button
-                    onClick={() => setPending({ trip, action: 'delete' })}
+                    onClick={() => handleTripDelete(trip)}
                     className="text-gray-300 hover:text-red-400 text-lg leading-none px-1"
                     title="목록에서 제거"
                   >
